@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alzheimer's Risk Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <h2>Enter Sensor Data for 7 Days</h2>
+    <form method="POST">
+        {% for i in range(1, 8) %}
+        <fieldset>
+            <legend>Day {{ i }}</legend>
+            <input name="alpha{{i}}" placeholder="Alpha Wave Ratio" required>
+            <input name="theta{{i}}" placeholder="Theta Wave Ratio" required>
+            <input name="step{{i}}" placeholder="Step Variance" required>
+            <input name="blink{{i}}" placeholder="Blink Rate" required>
+            <input name="hr{{i}}" placeholder="Heart Rate" required>
+            <input name="temp{{i}}" placeholder="Temperature" required>
+            <input name="abeta{{i}}" placeholder="Aβ Level" required>
+        </fieldset>
+        <br>
+        {% endfor %}
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if result %}
+        <h3>🧠 Prediction: {{ result }} RISK</h3>
+        <p>Daily Scores: {{ preds }}</p>
+    {% endif %}
+</body>
+</html>
+
