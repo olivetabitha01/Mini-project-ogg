@@ -3,31 +3,58 @@
 <head>
     <title>Alzheimer's Risk Prediction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        // Fetch updated sensor data every 10 seconds
+        async function fetchSensorData() {
+            const res = await fetch("/get_data");
+            const json = await res.json();
+            const s = json.sensor;
+            const pred = json.prediction;
 
+            document.getElementById("blink_rate").innerText = s.blink_rate;
+            document.getElementById("heart_rate").innerText = s.heart_rate;
+            document.getElementById("temperature").innerText = s.temperature;
+            document.getElementById("step_variance").innerText = s.step_variance;
+
+            if (pred && pred.risk) {
+                document.getElementById("result").innerHTML =
+                    `<h3>🧠 Risk Level: ${pred.risk}</h3><p>Score: ${pred.score}</p>`;
+            }
+        }
+        setInterval(fetchSensorData, 10000); // every 10 sec
+    </script>
 </head>
-<body>
-    <h2>Enter Sensor Data for 7 Days</h2>
-    <form method="POST">
-        {% for i in range(1, 8) %}
-        <fieldset>
-            <legend>Day {{ i }}</legend>
-            <input name="alpha{{i}}" placeholder="Alpha Wave Ratio" required>
-            <input name="theta{{i}}" placeholder="Theta Wave Ratio" required>
-            <input name="step{{i}}" placeholder="Step Variance" required>
-            <input name="blink{{i}}" placeholder="Blink Rate" required>
-            <input name="hr{{i}}" placeholder="Heart Rate" required>
-            <input name="temp{{i}}" placeholder="Temperature" required>
-            <input name="abeta{{i}}" placeholder="Aβ Level" required>
-        </fieldset>
-        <br>
-        {% endfor %}
-        <button type="submit">Predict</button>
+<body onload="fetchSensorData()">
+    <h2>Real-Time Alzheimer's Risk Monitoring</h2>
+
+    <h3>🧍‍♂️ Manual Inputs</h3>
+    <form action="/manual" method="POST">
+        <label>Alpha Wave Ratio:</label>
+        <input name="alpha_wave_ratio" value="{{ manual.alpha_wave_ratio }}" required><br><br>
+        <label>Theta Wave Ratio:</label>
+        <input name="theta_wave_ratio" value="{{ manual.theta_wave_ratio }}" required><br><br>
+        <label>Aβ Level:</label>
+        <input name="abeta_level" value="{{ manual.abeta_level }}" required><br><br>
+        <button type="submit">Update</button>
     </form>
 
-    {% if result %}
-        <h3>🧠 Prediction: {{ result }} RISK</h3>
-        <p>Daily Scores: {{ preds }}</p>
-    {% endif %}
+    <hr>
+
+    <h3>📟 Real-Time Sensor Data</h3>
+    <p><strong>Blink Rate:</strong> <span id="blink_rate">{{ sensor.blink_rate }}</span></p>
+    <p><strong>Heart Rate:</strong> <span id="heart_rate">{{ sensor.heart_rate }}</span></p>
+    <p><strong>Temperature:</strong> <span id="temperature">{{ sensor.temperature }}</span></p>
+    <p><strong>Step Variance:</strong> <span id="step_variance">{{ sensor.step_variance }}</span></p>
+
+    <hr>
+
+    <div id="result">
+        {% if prediction.risk %}
+        <h3>🧠 Risk Level: {{ prediction.risk }}</h3>
+        <p>Score: {{ prediction.score }}</p>
+        {% else %}
+        <p>Waiting for sensor data...</p>
+        {% endif %}
+    </div>
 </body>
 </html>
-
