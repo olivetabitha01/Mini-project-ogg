@@ -1,15 +1,6 @@
-<<<<<<< HEAD
 Flask
 pandas
 scikit-learn
 joblib
 gunicorn
 waitress
-=======
-Flask==2.3.2
-pandas
-scikit-learn
-joblib
-gunicorn
-waitress
->>>>>>> 9706f4b (adding updated code)
